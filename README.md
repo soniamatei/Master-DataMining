@@ -8,6 +8,7 @@ Master-DataMining/
 ├── linear_regression.py
 ├── gym_members_exercise_tracking.csv
 ├── models/
+│   └── KNN_Regression.pkl
 │   └── Linear_Regression.pkl
 ├── results/
 │   └── model_metrics.csv

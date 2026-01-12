@@ -103,7 +103,6 @@ def split_data(df, target_column, test_size=0.2, random_state=42):
 def scale_features(X_train, X_test):
     """
     Scale features using StandardScaler.
-    Use this for Linear Regression only!
     
     Parameters:
     -----------
@@ -125,15 +124,6 @@ def scale_features(X_train, X_test):
 
 
 def preprocess_gym_data(filepath):
-    """
-    Complete preprocessing pipeline.
-    Returns:
-    --------
-    Dictionary with:
-        - X_train, X_test, y_train, y_test (unscaled - for XGBoost & Random Forest)
-        - X_train_scaled, X_test_scaled (scaled - for Linear Regression)
-        - scaler
-    """
     df = load_data(filepath)
     
     df = handle_missing_values_mean(df)
@@ -168,17 +158,8 @@ if __name__ == "__main__":
     
     data = preprocess_gym_data('gym_members_exercise_tracking.csv')
     
-    # Example 1: XGBoost
-    print("\n1. XGBoost (use unscaled data):")
-    print(f"   X_train shape: {data['X_train'].shape}")
-    print(f"   X_test shape: {data['X_test'].shape}")
-
-    # from xgboost import XGBRegressor
-    # model = XGBRegressor()
-    # model.fit(data['X_train'], data['y_train'])
-    # predictions = model.predict(data['X_test'])
     
-    # Example 2: Linear Regression
+    # Example: Linear Regression
     print("\n2. Linear Regression (use scaled data):")
     print(f"   X_train_scaled shape: {data['X_train_scaled'].shape}")
     print(f"   X_test_scaled shape: {data['X_test_scaled'].shape}")
@@ -188,7 +169,7 @@ if __name__ == "__main__":
     # model.fit(data['X_train_scaled'], data['y_train'])
     # predictions = model.predict(data['X_test_scaled'])
     
-    # Example 3: Random Forest
+    # Example: Random Forest
     print("\n3. Random Forest (use unscaled data):")
     print(f"   X_train shape: {data['X_train'].shape}")
     print(f"   X_test shape: {data['X_test'].shape}")
