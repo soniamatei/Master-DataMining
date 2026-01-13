@@ -25,6 +25,7 @@ python -m venv .venv
 
 2. Activate the virtual environment:
    - Windows: `.venv\Scripts\activate`
+   - MacOS:
 
 3. Install dependencies:
 ```bash
