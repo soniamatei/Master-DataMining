@@ -1,4 +1,4 @@
-# Calories Burned Prediction - Linear Regression Implementation
+# Calories Burned Prediction - Machine Learning Implementation
 
 ## Project Structure
 
@@ -6,10 +6,13 @@
 Master-DataMining/
 ├── data_preprocessing.py
 ├── linear_regression.py
+├── knn_regression.py
+├── gradient_boosting.py
 ├── gym_members_exercise_tracking.csv
 ├── models/
-│   └── KNN_Regression.pkl
 │   └── Linear_Regression.pkl
+│   └── KNN_Regression.pkl
+│   └── Gradient_Boosting.pkl
 ├── results/
 │   └── model_metrics.csv
 ├── requirements.txt
@@ -24,8 +27,8 @@ python -m venv .venv
 ```
 
 2. Activate the virtual environment:
-   - Windows: `.venv\Scripts\activate`
-   - MacOS:
+   - **Windows**: `.venv\Scripts\activate`
+   - **macOS/Linux**: `source .venv/bin/activate`
 
 3. Install dependencies:
 ```bash
@@ -35,22 +38,33 @@ pip install -r requirements.txt
 ## Usage
 
 ### Run Linear Regression Training
-
 ```bash
 python linear_regression.py
 ```
 
-This will:
+### Run KNN Regression Training
+```bash
+python knn_regression.py
+```
+
+### Run Gradient Boosting Training
+```bash
+python gradient_boosting.py
+```
+
+Each script will:
 - Load and preprocess the gym dataset
-- Train the Linear Regression model using Normal Equation
+- Train the respective model
 - Evaluate on both training and test sets
 - Calculate all required metrics
-- Save the trained model to `models/Linear_Regression.pkl`
+- Save the trained model to `models/`
 - Export results to CSV files in `results/`
+
+---
 
 ## Implementation Details
 
-### Linear Regression Algorithm
+### 1. Linear Regression
 
 The implementation uses the **Normal Equation** method to find optimal weights:
 
@@ -63,14 +77,85 @@ Where:
 - X = feature matrix
 - y = target values
 
-### Why Normal Equation?
+**Why Normal Equation?**
 
 1. **Exact Solution**: Computes the optimal weights directly (no iterations)
 2. **Fast**: For datasets with moderate features (< 10,000), it's very efficient
 3. **No Hyperparameters**: No learning rate or iterations to tune
 4. **Stable**: Guaranteed to converge to the global minimum
 
-### Evaluation Metrics
+---
+
+### 2. KNN Regression (K-Nearest Neighbors)
+
+The implementation uses a **distance-based approach** to predict values:
+
+```
+ŷ = (1/k) * Σ y_i  for i in k nearest neighbors
+```
+
+Where:
+- ŷ = predicted value
+- k = number of neighbors
+- y_i = target values of nearest neighbors
+
+**How KNN Regression Works:**
+
+1. **Distance Calculation**: For a new data point, calculate the distance (Euclidean) to all training points
+2. **Find Neighbors**: Select the k closest training points
+3. **Average**: Predict the average of the target values of those k neighbors
+
+**Why Use Scaled Data for KNN?**
+
+KNN is distance-based, so features with larger scales would dominate the distance calculation. StandardScaler ensures all features contribute equally.
+
+**Hyperparameters:**
+- `k`: Number of neighbors (default: 5, can be optimized)
+- `k_range`: Range to search for optimal k when `find_best_k=True`
+
+---
+
+### 3. Gradient Boosting Regression
+
+The implementation builds an **ensemble of decision trees** sequentially:
+
+```
+F_m(x) = F_{m-1}(x) + η * h_m(x)
+```
+
+Where:
+- F_m(x) = prediction at iteration m
+- η = learning rate
+- h_m(x) = weak learner (decision tree) fitted to residuals
+
+**How Gradient Boosting Works:**
+
+1. **Initialize**: Start with a constant prediction (mean of target values)
+2. **Compute Residuals**: Calculate errors (y - current_prediction)
+3. **Fit Tree**: Train a decision tree to predict the residuals
+4. **Update**: Add the tree's predictions (scaled by learning rate) to the model
+5. **Repeat**: Continue for n_estimators iterations
+
+**Key Concepts:**
+- **Loss Function**: MSE = (1/2) * Σ(y - F(x))²
+- **Negative Gradient**: For MSE, this equals the residuals (y - F(x))
+- **Weak Learners**: Shallow decision trees (stumps) that capture patterns in residuals
+
+**Why Use Unscaled Data for Gradient Boosting?**
+
+Tree-based methods split on feature values directly and are invariant to monotonic transformations. Scaling doesn't affect the splits or predictions.
+
+**Hyperparameters:**
+- `n_estimators`: Number of trees (default: 100)
+- `learning_rate`: Step size for updates (default: 0.1)
+- `max_depth`: Maximum depth of each tree (default: 3)
+- `subsample`: Fraction of samples used per tree (default: 0.8)
+
+---
+
+## Evaluation Metrics
+
+All models are evaluated using the following metrics:
 
 1. **RMSE (Root Mean Squared Error)**
    - Penalizes larger errors more heavily
